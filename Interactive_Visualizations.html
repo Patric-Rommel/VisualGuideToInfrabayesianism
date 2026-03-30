@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geometry of Infra-Bayesian Measures</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.4/katex.min.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.4/katex.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.4/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@300;400&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#08090e;--bg2:#0e1019;--fg:#d4cfc4;--fg2:#8a8578;--accent:#e8a44a;--cyan:#4ae8cf;--coral:#e86a4a;--violet:#9b6ae8;--green:#5ae87a;--red:#e84a5a;--blue:#4a8ae8}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--fg);font-family:'Crimson Pro',Georgia,serif;font-size:18px;line-height:1.7;overflow-x:hidden}
+header{text-align:center;padding:80px 40px 60px;border-bottom:1px solid #1a1b25}
+h1{font-size:2.8em;font-weight:300;letter-spacing:-0.02em;color:#fff;margin-bottom:8px}
+.subtitle{font-size:1.1em;color:var(--fg2);font-style:italic}
+section{padding:60px 40px;border-bottom:1px solid #1a1b25;max-width:1300px;margin:0 auto}
+h2{font-size:1.8em;font-weight:300;color:var(--accent);margin-bottom:6px;letter-spacing:-0.01em}
+h2 .num{font-family:'JetBrains Mono',monospace;font-size:0.6em;color:var(--fg2);vertical-align:super;margin-right:4px}
+.desc{color:var(--fg2);margin-bottom:24px;max-width:800px}
+.row{display:flex;gap:32px;align-items:flex-start;flex-wrap:wrap}
+.col-text{flex:1;min-width:280px}
+.col-viz{flex:1.2;min-width:340px;display:flex;flex-direction:column;align-items:center}
+canvas.viz{border:1px solid #1a1b25;border-radius:8px;background:#050609;cursor:grab;max-width:100%}
+canvas.viz:active{cursor:grabbing}
+.controls{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;width:100%}
+.ctrl{display:flex;align-items:center;gap:6px;background:#0e1019;border:1px solid #1a1b25;border-radius:6px;padding:6px 12px;font-size:0.85em}
+.ctrl label{color:var(--fg2);font-family:'JetBrains Mono',monospace;font-size:0.85em;white-space:nowrap}
+.ctrl input[type=range]{width:100px;accent-color:var(--accent)}
+.ctrl .val{color:var(--accent);font-family:'JetBrains Mono',monospace;min-width:36px;text-align:right}
+.readout{background:#0e1019;border:1px solid #1a1b25;border-radius:6px;padding:10px 16px;margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:0.85em;color:var(--cyan);width:100%}
+p{margin-bottom:14px}
+.math-block{margin:16px 0;padding:12px 16px;background:#0a0b12;border-left:3px solid var(--accent);border-radius:0 6px 6px 0;overflow-x:auto}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0;font-size:0.85em}
+.legend-item{display:flex;align-items:center;gap:5px}
+.legend-dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+nav{position:fixed;right:16px;top:50%;transform:translateY(-50%);z-index:100;display:flex;flex-direction:column;gap:8px}
+nav a{width:10px;height:10px;border-radius:50%;background:#2a2b35;display:block;transition:all .2s}
+nav a:hover,nav a.active{background:var(--accent);transform:scale(1.4)}
+.note{font-size:0.9em;color:var(--fg2);font-style:italic;margin-top:8px}
+.placeholder{border:1px dashed #4a3a20;border-radius:6px;padding:10px 16px;margin:12px 0;color:#8a7a5a;font-style:italic;font-size:0.95em;background:#0c0b08}
+.placeholder::before{content:'✎ ';opacity:0.5}
+.own-text{border-left:2px solid var(--fg2);padding-left:14px;margin:10px 0}
+@media(max-width:800px){.row{flex-direction:column} section{padding:40px 20px} h1{font-size:2em}}
+</style>
+</head>
+<body>
+<header>
+<h1>The Visual Guide to Inframeasures</h1>
+<p class="subtitle">Gaining geometric intution in finite dimensions</p>
+</header>
+
+<nav id="dotnav"></nav>
+
+<!-- ═══════ SECTION 1 ═══════ -->
+<section id="s1">
+<h2><span class="num">01</span>Finite Signed Measures &amp; Linear Functionals</h2>
+<div class="row">
+<div class="col-text">
+<p>$\mathcal{M}^\pm(X)$ &mdash; all finite signed measures over $X$.</p>
+<p>Borel $\sigma$-Algebra, for us: power set.</p>
+<div class="math-block">$$m: \Sigma(X) \to \mathbb{R}$$</div>
+<p>$\sigma$-additivity: $\;m\!\left(\bigcup_i A_i\right) = \sum_i m(A_i),\quad A_i \cap A_j = \emptyset$</p>
+<p>$m(\emptyset) = 0, \quad |m(A)| < \infty \;\;\forall A \in \Sigma(X)$</p>
+<p>$\longrightarrow$ <strong>Vector space.</strong></p>
+<p class="own-text">For us, $\sigma$-additivity implies that $m$ can be uniquely specified by the value it takes on the individual $x \in X$.</p>
+<div class="math-block">$$\mathcal{M}^\pm(X) \cong \mathbb{R}^4, \quad \mathcal{M}^\pm(X) \oplus \mathbb{R} \cong \mathbb{R}^5$$</div>
+<p class="own-text">$m \in \mathcal{M}^\pm(X)$ can be interpreted as a function $m: C(X,[0,1]) \to \mathbb{R},\;\; m(f) = \int\! f\, dm$.</p>
+<p>For us:</p>
+<div class="math-block">$$(m,b)(f) \;=\; \sum_i m_{(a_i, r_i)}\, f_{a_i, r_i} \;+\; b$$</div>
+<p class="own-text">$\mathcal{M}^\pm(X)$ is equipped with <strong>weak topology</strong>: $m_n \to m \iff m_n(f) \to m(f)$ for all $f \in C_b(X)$ (bounded cont. func.).</p>
+<div class="placeholder">Fill in: connecting text for the visualization</div>
+</div>
+<div class="col-viz">
+<canvas class="viz" id="c1" width="560" height="400"></canvas>
+<div class="controls" id="ctrls1"></div>
+<div class="readout" id="ro1"></div>
+</div>
+</div>
+</section>
+
+<!-- ═══════ SECTION 2 ═══════ -->
+<section id="s2">
+<h2><span class="num">02</span>The SA-Measure Cone</h2>
+<div class="row">
+<div class="col-text">
+<p><strong>sa-measure:</strong> $(m^+ + m^-,\; b) \in \mathcal{M}^\pm(X) \oplus \mathbb{R}\;$ such that $\;m^-(1) + b \geq 0$.</p>
+<p>From Jordan decomposition: $m = m^+ + m^-$, where $m^+ \geq 0,\; m^- \leq 0$.</p>
+<div class="math-block">$$m(f) + b = \begin{pmatrix}m \\ b\end{pmatrix}\!\cdot\!\begin{pmatrix}1 \\ 1\end{pmatrix} \geq 0$$</div>
+<p class="own-text">Why sa-measures like this: $m^-(1) + b \geq 0$? &nbsp;(And not $m(1) + b \geq 0$?)</p>
+<p class="own-text">Because we want $m(f) + b \geq 0\;\;\forall f \in C(X, [0,1])$.</p>
+<p>"$\Rightarrow$": $\;m(f) + b \geq 0 \;\Rightarrow\; m(1 \cdot \mathbb{1}_N) + b \geq b$, $N$ suitable from decomp. $\;\Rightarrow\; m^-(1) + b \geq 0\;\checkmark$</p>
+<p>"$\Leftarrow$": $\;0 \leq m^-(1) + b \leq m^-(1) + m^+(1) + b \leq m^-(f) + m^+(f) + b = m(f) + b$</p>
+<p>$\longrightarrow m(f) + b \geq 0.$</p>
+<p class="own-text"><strong>So sa-measures are precisely those with $(m,b)(f) \geq 0$ for all $f \in C(X, [0,1])$.</strong></p>
+<p class="own-text">$\mathcal{M}^{SA}(X)$ &mdash; also a convex cone. The "all-positive section of $\mathcal{M}^\pm(X) \oplus \mathbb{R}$".</p>
+<p class="own-text">The lower boundary is given by $b = 0$, the other boundaries are those with $\exists f$ such that $m(f) = 0$.</p>
+<div class="legend">
+<span class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> $b=0$</span>
+<span class="legend-item"><span class="legend-dot" style="background:var(--cyan)"></span> $m_1+b=0$</span>
+<span class="legend-item"><span class="legend-dot" style="background:var(--coral)"></span> $m_2+b=0$</span>
+<span class="legend-item"><span class="legend-dot" style="background:var(--violet)"></span> $m_1+m_2+b=0$</span>
+</div>
+</div>
+<div class="col-viz">
+<canvas class="viz" id="c2" width="560" height="400"></canvas>
+<div class="controls" id="ctrls2"></div>
+</div>
+</div>
+</section>
+
+<!-- ═══════ SECTION 3 ═══════ -->
+<section id="s3">
+<h2><span class="num">03</span>Partial Order</h2>
+<div class="row">
+<div class="col-text">
+<p>$\longrightarrow$ <strong>Partial order:</strong></p>
+<div class="math-block">$$(m_1, b_1) \geq (m_2, b_2) \;\iff\; m_1(f) + b_1 \geq m_2(f) + b_2 \;\;\forall f \in C(X,[0,1])$$
+$$\iff (m_1 - m_2,\; b_1 - b_2)(f) \geq 0$$
+$$\iff (m_1 - m_2,\; b_1 - b_2) \in \mathcal{M}^{SA}(X)$$</div>
+<p class="own-text">$\longrightarrow$ One sa-measure "above" another if their difference is another sa-measure.</p>
+<p class="own-text">For any point $(m,b)$ you get all points it above by gluing $\mathcal{M}^{SA}$ on top of it: $\;\{(m,b) + m_{SA} \mid m_{SA} \in \mathcal{M}^{SA}\}$.</p>
+<p class="own-text">You get the points below it by gluing $-\mathcal{M}^{SA}$ on it: $\;\{(m,b) - m_{SA} \mid m_{SA} \in \mathcal{M}^{SA}\}$, which is <strong>not</strong> a subset of $\mathcal{M}^{SA}$ anymore.</p>
+<div class="placeholder">Fill in: additional remarks on the partial order</div>
+</div>
+<div class="col-viz">
+<canvas class="viz" id="c3" width="560" height="400"></canvas>
+<div class="controls" id="ctrls3"></div>
+</div>
+</div>
+</section>
+
+<!-- ═══════ SECTION 4 ═══════ -->
+<section id="s4">
+<h2><span class="num">04</span>Minimal &amp; Extremal Points</h2>
+<div class="row">
+<div class="col-text">
+<p>For some set $B \subseteq \mathcal{M}^{SA}$, we define the expectation:</p>
+<div class="math-block">$$\mathbb{E}_B(f) = \inf_{(m,b) \in B}\; (m(f) + b).$$</div>
+<p class="own-text">So to calculate these, the points "furthest down" in $B$ are most important &mdash; the <strong>minimal points</strong> $B^{\min}$.</p>
+<div class="math-block">$$B^{\min} = B \;\cap\; \bigcap_{(m,b)\in B}\big((m,b) - \mathcal{M}^{SA}\big) \qquad\text{if } B \text{ is closed.}$$</div>
+<p class="own-text"><strong>Upper completion:</strong> $B^{uc} = B + \mathcal{M}^{SA}$, gluing $\mathcal{M}^{SA}$ on top of all points in $B$.</p>
+<p class="own-text">Minimal points $B^{\min}$ are <strong>NOT</strong> obtained by scaling $\lambda(m,b)$, lowering $\lambda$ until you reach boundary of $B$, since $B$ does not have to be a convex cone.</p>
+<p class="own-text">Note on minimal points: they form the "cutting surface" where the cone has been cut.</p>
+<p class="own-text">Boundary of $\mathcal{M}^{SA}$ given by $b = 0$ or $m_i = 0$ for some $i$.</p>
+<p><strong>Extremal points</strong> are those that don't lie on a line between two other points. Let's call the set of these $B^{\text{ext}}$.</p>
+<p class="own-text">1. Extremal points are minimal. ($\Leftarrow$ non-minimal points are non-extremal.)</p>
+<p class="own-text">$\Longrightarrow$ It is enough to keep track of extremal points!</p>
+</div>
+<div class="col-viz">
+<canvas class="viz" id="c4" width="560" height="400"></canvas>
+<div class="controls" id="ctrls4"></div>
+</div>
+</div>
+</section>
+
+<!-- ═══════ SECTION 5 ═══════ -->
+<section id="s5">
+<h2><span class="num">05</span>Geometric Interpretation of $\mathbb{E}_B(f)$</h2>
+<div class="row">
+<div class="col-text">
+<div class="math-block">$$(m,b)(f) = m \cdot f + b = \sum_i \mu_i f_i + b = \begin{pmatrix}1 \\ f\end{pmatrix}\!\cdot\!\begin{pmatrix}b \\ \mu\end{pmatrix}$$</div>
+<p class="own-text">So what is the infimum of this? The function $f$ defines a vector $\begin{pmatrix}1 \\ f\end{pmatrix}$. So the infimum is reached by moving as far as possible along $-\begin{pmatrix}1 \\ f\end{pmatrix}$.</p>
+<div class="placeholder">Fill in: additional geometric discussion</div>
+<p class="own-text"><strong>Weak minimal boundedness:</strong> $f \mapsto \mathbb{E}_B(f)$ is uniformly continuous.</p>
+<p>Boundary interpretation:</p>
+<p class="own-text">The boundary of $\mathcal{M}^a(X)$ are those where $b = 0$ or where some $m_i = 0$ $\;\to\;$ some histories get zero measure.</p>
+<p class="own-text">The plane $\begin{pmatrix}b \\ \lambda, 1\end{pmatrix}$ represents the measures that give the same measure/weight to all possible "microstates" / microhistories $\;\hat{=}\;$ maximum uncertainty / indifference between the micro histories.</p>
+<p class="own-text">Moving to the boundaries of $\mathcal{M}^{SA}(X)$ (except the $b=0$ boundary) represents more and more certainty, measure is being concentrated more and more.</p>
+</div>
+<div class="col-viz">
+<canvas class="viz" id="c5" width="560" height="400"></canvas>
+<div class="controls" id="ctrls5"></div>
+<div class="readout" id="ro5"></div>
+</div>
+</div>
+</section>
+
+<!-- ═══════ SECTION 6 ═══════ -->
+<section id="s6">
+<h2><span class="num">06</span>Normalization</h2>
+<div class="row">
+<div class="col-text">
+<p><strong>Condition: Normalization.</strong></p>
+<div class="math-block">$$\mathbb{E}_B(0) = 0, \qquad \mathbb{E}_B(1) = 1$$</div>
+<p class="own-text">$\mathbb{E}_B(0) = 0 \;\iff\; \inf_B (m(0) + b) = 0 \;=\; \inf_B \begin{pmatrix}1 \\ 0\end{pmatrix}\!\cdot\!\begin{pmatrix}b \\ m\end{pmatrix} = 0$</p>
+<p>$\longrightarrow$ <strong>$B$ touches the $b = 0$ plane.</strong></p>
+<p class="own-text">$\mathbb{E}_B(1) = 1 \;\iff\; \inf_B \begin{pmatrix}1 \\ 1\end{pmatrix}\!\cdot\!\begin{pmatrix}b \\ m\end{pmatrix} = 1$</p>
+<p>$\begin{pmatrix}1 \\ 1\end{pmatrix}\!\cdot\!\begin{pmatrix}1 \\ m\end{pmatrix} = 1$ defines a plane $\perp \begin{pmatrix}1 \\ 1\end{pmatrix}$.</p>
+<p>$\longrightarrow$ <strong>$B$ touches this plane.</strong></p>
+<p class="own-text"><strong>Normalization:</strong> Move $B$ down by $\mathbb{E}_B(0)$ (distance from $b=0$ plane), obtaining $B' = B - (0, \mathbb{E}_B(0))$, then rescale by $\frac{1}{\mathbb{E}_{B'}(1)}$ to fulfill the second condition.</p>
+<div class="placeholder">Fill in: additional normalization remarks</div>
+</div>
+<div class="col-viz">
+<canvas class="viz" id="c6" width="560" height="400"></canvas>
+<div class="controls" id="ctrls6"></div>
+<div class="readout" id="ro6"></div>
+</div>
+</div>
+</section>
+
+<!-- ═══════ SECTION 7 ═══════ -->
+<section id="s7">
+<h2><span class="num">07</span>Mixtures of Infradistributions</h2>
+<div class="row">
+<div class="col-text">
+<p class="own-text">We need to take a step back and understand <strong>mixtures of infradistributions</strong>.</p>
+<p><strong>Mixing two shapes:</strong></p>
+<p class="own-text">For every point in $A_1$, there is a scaled copy of $A_2$. The union of all of these is the mixture. $A_1$ is like a <em>paintbrush shape</em> that is dragged and scaled according to $A_2$.</p>
+<div class="math-block">$$\alpha A_1 + (1-\alpha) A_2 = \{\alpha a_1 + (1-\alpha) a_2 \mid a_1 \in A_1,\; a_2 \in A_2\}$$</div>
+<p class="own-text">Point furthest out along some direction will be the weighted average of the vectors in $A_1$ and $A_2$ along the same direction away from the center. This is true along all directions.</p>
+<p class="own-text">$\longrightarrow$ Mixture surface is "weighted interpolation" of surfaces of the mixed sets.</p>
+<p class="own-text">$\longrightarrow$ Mixture corresponds to infradistribution interpolating pointwise / geometrically between mixed infradistributions.</p>
+<p><strong>Roughly:</strong></p>
+<p class="own-text">Knightian uncertainty $\;\cong\;$ set union within infradistribution, or within the minimal points.</p>
+<p class="own-text">Prob. distr. between infradist.'s $\;\cong\;$ how much the infradist. looks like another one geometrically.</p>
+</div>
+<div class="col-viz">
+<canvas class="viz" id="c7" width="560" height="400"></canvas>
+<div class="controls" id="ctrls7"></div>
+</div>
+</div>
+</section>
+
+<!-- ═══════ SECTION 8 ═══════ -->
+<section id="s8">
+<h2><span class="num">08</span>The Raw Update</h2>
+<div class="row">
+<div class="col-text">
+<p><strong>Gluing $f$ to $g$ via $L$:</strong></p>
+<p class="own-text">We often imagine that $L \approx 1$ in some region and $L \approx 0$ in the complement, then $f \star^L g$ is obtained by taking $f$ in the subspace where $L \approx 1$ and $g$ where $L \approx 0$ and adding them up.</p>
+<p>$H$ is updated by mapping each $m \in H$ to:</p>
+<div class="math-block">$$(m, b) \;\mapsto\; \frac{1}{P_H^s(L)}\left(m \cdot L,\;\; b + m(0 \star^L g)\right)$$</div>
+<p class="own-text">What does $m \cdot L$ do geometrically? $\;0 \leq L \leq 1$, so $m$ is moved closer to the $m$-boundaries of $\mathcal{M}^{SA}$, the stronger for $m_i$, the stronger "microhistory" $i$ is disconfirmed by $L$.</p>
+<p class="own-text">Or: $m \cdot L$ corresponds to element-wise multiplication of $m$ with $L$, which is like multiplication with the matrix $M_L = \text{diag}(L_i, \ldots, L_n)$. Unit sphere gets mapped to ellipsoid with semi-axes $L_i$.</p>
+<p>As a matrix:</p>
+<div class="math-block">$$\begin{pmatrix}b'\\m'\end{pmatrix} = \begin{pmatrix}1 & (1{-}L)g \\ 0 & \text{diag}(L)\end{pmatrix}\begin{pmatrix}b\\m\end{pmatrix}$$</div>
+<p class="own-text">$\longrightarrow$ raw update maps $\mathcal{M}^{SA}$ to (a subset of) $\mathcal{M}^{SA}$.</p>
+<p class="own-text">$\longrightarrow$ Is linear.</p>
+<p class="own-text">$\Longrightarrow$ It is enough to keep track of extremal points!</p>
+<div class="placeholder">Fill in: proof sketch / additional remarks</div>
+</div>
+<div class="col-viz">
+<canvas class="viz" id="c8" width="560" height="400"></canvas>
+<div class="controls" id="ctrls8"></div>
+<div class="readout" id="ro8"></div>
+</div>
+</div>
+</section>
+
+<footer style="text-align:center;padding:40px;color:var(--fg2);font-size:0.85em;border-top:1px solid #1a1b25">
+  All visualizations use $X = \{x_1, x_2\}$, so $\mathcal{M}^\pm(X)\oplus\mathbb{R} \cong \mathbb{R}^3$ with coordinates $(m_1, m_2, b)$.<br>
+  Axes: <span style="color:var(--coral)">m₁ (red/right)</span> · <span style="color:var(--blue)">m₂ (blue/forward)</span> · <span style="color:var(--green)">b (green/up)</span>. Drag to rotate, scroll to zoom.<br><br>
+  <span style="color:#4a3a20">✎ Dashed boxes</span> = placeholders for your own text. &nbsp; <span style="color:var(--fg2)">Left-bordered paragraphs</span> = your formulations from the notes.
+</footer>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+//  SHARED UTILITIES
+// ══════════════════════════════════════════════════════════════
+
+const TAU = Math.PI * 2;
+
+// Colors
+const C = {
+  bg: 0x050609,
+  grid: 0x1a1b25,
+  axisX: 0xe86a4a,  // m1
+  axisY: 0x5ae87a,  // b
+  axisZ: 0x4a8ae8,  // m2
+  cone1: 0xe8a44a,
+  cone2: 0x4ae8cf,
+  cone3: 0xe86a4a,
+  cone4: 0x9b6ae8,
+  setB: 0x4ae8cf,
+  setBWire: 0x2ab8a0,
+  probe: 0xffffff,
+  highlight: 0xffe033,
+  green: 0x5ae87a,
+  red: 0xe84a5a,
+  setA1: 0xe8a44a,
+  setA2: 0x9b6ae8,
+  mix: 0x4ae8cf
+};
+
+class Scene3D {
+  constructor(canvasId, opts = {}) {
+    this.canvas = document.getElementById(canvasId);
+    this.w = this.canvas.width;
+    this.h = this.canvas.height;
+    this.scene = new THREE.Scene();
+    this.camera = new THREE.PerspectiveCamera(45, this.w / this.h, 0.1, 100);
+    this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true, alpha: true });
+    this.renderer.setSize(this.w, this.h);
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.setClearColor(C.bg);
+
+    // Camera position (spherical)
+    this.theta = opts.theta || 0.8;
+    this.phi = opts.phi || 1.0;
+    this.radius = opts.radius || 4.5;
+    this.target = new THREE.Vector3(opts.tx||0.2, opts.ty||0.4, opts.tz||0.2);
+    this.updateCamera();
+
+    // Lights
+    this.scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+    const dl = new THREE.DirectionalLight(0xffffff, 0.5);
+    dl.position.set(3, 5, 4);
+    this.scene.add(dl);
+
+    // Mouse rotation
+    this._drag = false;
+    this.canvas.addEventListener('mousedown', e => { this._drag = true; this._px = e.clientX; this._py = e.clientY; });
+    this.canvas.addEventListener('mousemove', e => {
+      if (!this._drag) return;
+      this.theta -= (e.clientX - this._px) * 0.008;
+      this.phi = Math.max(0.15, Math.min(Math.PI - 0.15, this.phi - (e.clientY - this._py) * 0.008));
+      this._px = e.clientX; this._py = e.clientY;
+      this.updateCamera();
+    });
+    this.canvas.addEventListener('mouseup', () => this._drag = false);
+    this.canvas.addEventListener('mouseleave', () => this._drag = false);
+    this.canvas.addEventListener('wheel', e => {
+      this.radius = Math.max(1.5, Math.min(12, this.radius + e.deltaY * 0.005));
+      this.updateCamera();
+      e.preventDefault();
+    }, { passive: false });
+    // Touch support
+    this.canvas.addEventListener('touchstart', e => { this._drag=true; this._px=e.touches[0].clientX; this._py=e.touches[0].clientY; }, {passive:true});
+    this.canvas.addEventListener('touchmove', e => {
+      if(!this._drag) return;
+      this.theta -= (e.touches[0].clientX - this._px)*0.008;
+      this.phi = Math.max(0.15,Math.min(Math.PI-0.15, this.phi-(e.touches[0].clientY-this._py)*0.008));
+      this._px=e.touches[0].clientX; this._py=e.touches[0].clientY;
+      this.updateCamera();
+    }, {passive:true});
+    this.canvas.addEventListener('touchend', ()=>this._drag=false);
+  }
+
+  updateCamera() {
+    const {radius:r, phi, theta, target:t} = this;
+    this.camera.position.set(
+      t.x + r * Math.sin(phi) * Math.cos(theta),
+      t.y + r * Math.cos(phi),
+      t.z + r * Math.sin(phi) * Math.sin(theta)
+    );
+    this.camera.lookAt(t);
+  }
+
+  render() { this.renderer.render(this.scene, this.camera); }
+}
+
+// Draw axes
+function addAxes(scene, len = 2) {
+  const dirs = [
+    [new THREE.Vector3(len,0,0), C.axisX],
+    [new THREE.Vector3(0,len,0), C.axisY],
+    [new THREE.Vector3(0,0,len), C.axisZ],
+    [new THREE.Vector3(-len*0.3,0,0), C.axisX],
+    [new THREE.Vector3(0,-len*0.1,0), C.axisY],
+    [new THREE.Vector3(0,0,-len*0.3), C.axisZ],
+  ];
+  dirs.forEach(([d, c]) => {
+    const g = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), d]);
+    scene.add(new THREE.Line(g, new THREE.LineBasicMaterial({color: c, transparent:true, opacity:0.5})));
+  });
+  // Axis tip cones
+  [[new THREE.Vector3(len,0,0), new THREE.Vector3(0,1,0), C.axisX, 'm₁'],
+   [new THREE.Vector3(0,len,0), new THREE.Vector3(0,0,1), C.axisY, 'b'],
+   [new THREE.Vector3(0,0,len), new THREE.Vector3(1,0,0), C.axisZ, 'm₂']
+  ].forEach(([pos, up, color]) => {
+    const cg = new THREE.ConeGeometry(0.03, 0.1, 8);
+    const cm = new THREE.Mesh(cg, new THREE.MeshBasicMaterial({color}));
+    cm.position.copy(pos);
+    cm.lookAt(pos.clone().multiplyScalar(1.1));
+    scene.add(cm);
+  });
+}
+
+// Create a cone face (triangle from origin along two rays, truncated at length L)
+function makeConeFace(r1, r2, color, opacity = 0.2, L = 2.2) {
+  const g = new THREE.BufferGeometry();
+  const v1 = r1.clone().multiplyScalar(L);
+  const v2 = r2.clone().multiplyScalar(L);
+  g.setAttribute('position', new THREE.Float32BufferAttribute([
+    0,0,0, v1.x,v1.y,v1.z, v2.x,v2.y,v2.z
+  ], 3));
+  g.computeVertexNormals();
+  const mat = new THREE.MeshBasicMaterial({color, transparent:true, opacity, side:THREE.DoubleSide, depthWrite:false});
+  return new THREE.Mesh(g, mat);
+}
+
+// Draw an edge line between two scaled rays
+function makeEdgeLine(r1, r2, color, L = 2.2) {
+  const pts = [r1.clone().multiplyScalar(L), r2.clone().multiplyScalar(L)];
+  const g = new THREE.BufferGeometry().setFromPoints(pts);
+  return new THREE.Line(g, new THREE.LineBasicMaterial({color, transparent:true, opacity:0.6}));
+}
+
+// Extreme rays of the SA cone (in Three.js coords: x=m1, y=b, z=m2)
+const RAYS = [
+  new THREE.Vector3(1, 0, 0),   // R1: pure positive m1
+  new THREE.Vector3(0, 0, 1),   // R2: pure positive m2
+  new THREE.Vector3(-1, 1, 0),  // R3: (m1=-1, b=1, m2=0)
+  new THREE.Vector3(0, 1, -1),  // R4: (m1=0, b=1, m2=-1)
+];
+
+// Add the full SA cone to a scene
+function addSACone(scene, opacity = 0.15, L = 2.2) {
+  const faces = [];
+  // F1 (b=0): R1-R2
+  faces.push(makeConeFace(RAYS[0], RAYS[1], C.cone1, opacity, L));
+  // F2 (m1+b=0): R2-R3
+  faces.push(makeConeFace(RAYS[1], RAYS[2], C.cone2, opacity, L));
+  // F3 (m2+b=0): R1-R4
+  faces.push(makeConeFace(RAYS[3], RAYS[0], C.cone3, opacity, L));
+  // F4 (m1+m2+b=0): R3-R4
+  faces.push(makeConeFace(RAYS[2], RAYS[3], C.cone4, opacity, L));
+  faces.forEach(f => scene.add(f));
+
+  // Edge lines along extreme rays
+  RAYS.forEach((r, i) => {
+    const cols = [C.green, C.blue, C.coral, C.violet];
+    const g = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), r.clone().multiplyScalar(L)]);
+    scene.add(new THREE.Line(g, new THREE.LineBasicMaterial({color: cols[i], transparent:true, opacity:0.7})));
+  });
+
+  // Connecting edges at truncation
+  const pairs = [[0,1],[1,2],[2,3],[3,0]];
+  pairs.forEach(([a,b])=> scene.add(makeEdgeLine(RAYS[a], RAYS[b], 0x3a3b45, L)));
+
+  return faces;
+}
+
+// Create a tetrahedron mesh from 4 vertices
+function makeTetra(verts, color, wireColor, opacity = 0.25) {
+  const group = new THREE.Group();
+  const faces = [[0,1,2],[0,1,3],[0,2,3],[1,2,3]];
+  faces.forEach(([a,b,c]) => {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute([
+      verts[a].x,verts[a].y,verts[a].z,
+      verts[b].x,verts[b].y,verts[b].z,
+      verts[c].x,verts[c].y,verts[c].z
+    ], 3));
+    g.computeVertexNormals();
+    group.add(new THREE.Mesh(g, new THREE.MeshBasicMaterial({color, transparent:true, opacity, side:THREE.DoubleSide, depthWrite:false})));
+  });
+  // Wireframe edges
+  const edges = [[0,1],[0,2],[0,3],[1,2],[1,3],[2,3]];
+  edges.forEach(([a,b]) => {
+    const g = new THREE.BufferGeometry().setFromPoints([verts[a], verts[b]]);
+    group.add(new THREE.Line(g, new THREE.LineBasicMaterial({color: wireColor})));
+  });
+  // Vertex spheres
+  verts.forEach(v => {
+    const s = new THREE.Mesh(new THREE.SphereGeometry(0.03, 12, 12), new THREE.MeshBasicMaterial({color: wireColor}));
+    s.position.copy(v);
+    group.add(s);
+  });
+  return group;
+}
+
+// Arrow helper
+function makeArrow(from, to, color, headLen = 0.08) {
+  const dir = to.clone().sub(from);
+  const len = dir.length();
+  dir.normalize();
+  const arrow = new THREE.ArrowHelper(dir, from, len, color, headLen, headLen * 0.5);
+  return arrow;
+}
+
+// Point sphere
+function makePoint(pos, color, r = 0.04) {
+  const s = new THREE.Mesh(new THREE.SphereGeometry(r, 16, 16), new THREE.MeshBasicMaterial({color}));
+  s.position.copy(pos);
+  return s;
+}
+
+// Slider helper
+function addSlider(container, label, min, max, step, value, onChange) {
+  const div = document.createElement('div');
+  div.className = 'ctrl';
+  const lbl = document.createElement('label');
+  lbl.textContent = label;
+  const inp = document.createElement('input');
+  inp.type = 'range'; inp.min = min; inp.max = max; inp.step = step; inp.value = value;
+  const val = document.createElement('span');
+  val.className = 'val';
+  val.textContent = parseFloat(value).toFixed(2);
+  inp.addEventListener('input', () => { val.textContent = parseFloat(inp.value).toFixed(2); onChange(parseFloat(inp.value)); });
+  div.append(lbl, inp, val);
+  container.appendChild(div);
+  return inp;
+}
+
+function addButton(container, text, onClick) {
+  const btn = document.createElement('button');
+  btn.textContent = text;
+  btn.style.cssText = 'background:var(--accent);color:#000;border:none;padding:6px 16px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:0.85em;font-weight:600';
+  btn.addEventListener('click', onClick);
+  container.appendChild(btn);
+  return btn;
+}
+
+// Standard B vertices (in Three.js: x=m1, y=b, z=m2)
+const B_VERTS = [
+  new THREE.Vector3(0.5, 0.3, 0.15),   // high m1, low b
+  new THREE.Vector3(0.15, 0.3, 0.5),   // high m2, low b
+  new THREE.Vector3(0.25, 0.75, 0.3),  // mid, high b
+  new THREE.Vector3(-0.05, 0.55, 0.1), // slight neg m1, mid b
+];
+
+// Evaluate (m,b)(f) for a vertex v=(m1,b,m2) and function f=(f1,f2)
+function evalFunc(v, f1, f2) { return v.x * f1 + v.z * f2 + v.y; }
+
+
+// ══════════════════════════════════════════════════════════════
+//  SECTION 1: Linear Functionals
+// ══════════════════════════════════════════════════════════════
+function initS1() {
+  const s = new Scene3D('c1', {radius:4, theta:0.6, phi:0.9, tx:0.3, ty:0.3, tz:0.2});
+  addAxes(s.scene, 1.5);
+
+  const pt = new THREE.Vector3(0.4, 0.5, 0.3); // (m1, b, m2)
+  const ptMesh = makePoint(pt, C.highlight, 0.05);
+  s.scene.add(ptMesh);
+
+  let f1 = 0.5, f2 = 0.5;
+  let arrow = null, plane = null;
+
+  function update() {
+    if (arrow) s.scene.remove(arrow);
+    if (plane) s.scene.remove(plane);
+
+    // Direction vector (1, f1, f2) mapped to (f1, 1, f2) in Three.js coords (x=m1, y=b, z=m2)
+    // Actually: the augmented vector is (b-component=1, m1-component=f1, m2-component=f2)
+    // In Three.js: direction = (f1, 1, f2), normalized for display
+    const dir = new THREE.Vector3(f1, 1, f2).normalize();
+    arrow = makeArrow(new THREE.Vector3(), dir.clone().multiplyScalar(1.8), C.probe, 0.1);
+    s.scene.add(arrow);
+
+    // Perpendicular plane through point
+    const val = evalFunc(pt, f1, f2);
+    const pg = new THREE.PlaneGeometry(2, 2);
+    plane = new THREE.Mesh(pg, new THREE.MeshBasicMaterial({color: C.accent, transparent:true, opacity:0.08, side:THREE.DoubleSide, depthWrite:false}));
+    // Orient plane perpendicular to dir, at distance val along dir
+    plane.lookAt(dir);
+    plane.position.copy(dir.clone().multiplyScalar(val));
+    s.scene.add(plane);
+
+    document.getElementById('ro1').innerHTML =
+      `(m,b)(f) = ${pt.x.toFixed(2)}·${f1.toFixed(2)} + ${pt.z.toFixed(2)}·${f2.toFixed(2)} + ${pt.y.toFixed(2)} = <strong style="color:var(--accent)">${val.toFixed(3)}</strong>`;
+    s.render();
+  }
+
+  const ctr = document.getElementById('ctrls1');
+  addSlider(ctr, 'f₁', 0, 1, 0.01, f1, v => { f1 = v; update(); });
+  addSlider(ctr, 'f₂', 0, 1, 0.01, f2, v => { f2 = v; update(); });
+  update();
+  return s;
+}
+
+
+// ══════════════════════════════════════════════════════════════
+//  SECTION 2: SA Cone
+// ══════════════════════════════════════════════════════════════
+function initS2() {
+  const s = new Scene3D('c2', {radius:5, theta:0.7, phi:0.85, tx:0, ty:0.5, tz:0});
+  addAxes(s.scene, 1.8);
+  const faces = addSACone(s.scene, 0.18, 2.0);
+  s.render();
+
+  // Toggle face visibility
+  const ctr = document.getElementById('ctrls2');
+  const labels = ['b=0', 'm₁+b=0', 'm₂+b=0', 'm₁+m₂+b=0'];
+  const colors = ['var(--accent)', 'var(--cyan)', 'var(--coral)', 'var(--violet)'];
+  labels.forEach((lbl, i) => {
+    const div = document.createElement('div');
+    div.className = 'ctrl';
+    div.style.cursor = 'pointer';
+    div.innerHTML = `<span style="color:${colors[i]};font-weight:bold">■</span> <label style="cursor:pointer">${lbl}</label>`;
+    div.addEventListener('click', () => {
+      faces[i].visible = !faces[i].visible;
+      div.style.opacity = faces[i].visible ? 1 : 0.3;
+      s.render();
+    });
+    ctr.appendChild(div);
+  });
+
+  return s;
+}
+
+
+// ══════════════════════════════════════════════════════════════
+//  SECTION 3: Partial Order
+// ══════════════════════════════════════════════════════════════
+function initS3() {
+  const s = new Scene3D('c3', {radius:5.5, theta:0.6, phi:0.85, tx:0, ty:0.5, tz:0});
+  addAxes(s.scene, 1.8);
+  addSACone(s.scene, 0.06, 2.0);
+
+  let px = 0.3, py = 0.6, pz = 0.2;
+  const ptMesh = makePoint(new THREE.Vector3(px, py, pz), C.highlight, 0.06);
+  s.scene.add(ptMesh);
+
+  let upperCone = new THREE.Group();
+  let lowerCone = new THREE.Group();
+  s.scene.add(upperCone);
+  s.scene.add(lowerCone);
+
+  function buildTranslatedCone(group, origin, color, invert, L = 1.5) {
+    while (group.children.length) group.remove(group.children[0]);
+    const sign = invert ? -1 : 1;
+    const rayPairs = [[0,1],[1,2],[2,3],[3,0]];
+    for (const [a, b] of rayPairs) {
+      const r1 = RAYS[a].clone().multiplyScalar(sign * L).add(origin);
+      const r2 = RAYS[b].clone().multiplyScalar(sign * L).add(origin);
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.Float32BufferAttribute([
+        origin.x, origin.y, origin.z, r1.x, r1.y, r1.z, r2.x, r2.y, r2.z
+      ], 3));
+      group.add(new THREE.Mesh(g, new THREE.MeshBasicMaterial({
+        color, transparent:true, opacity:0.12, side:THREE.DoubleSide, depthWrite:false
+      })));
+    }
+    // Edges
+    RAYS.forEach(r => {
+      const end = r.clone().multiplyScalar(sign * L).add(origin);
+      const g = new THREE.BufferGeometry().setFromPoints([origin, end]);
+      group.add(new THREE.Line(g, new THREE.LineBasicMaterial({color, transparent:true, opacity:0.4})));
+    });
+  }
+
+  function update() {
+    const o = new THREE.Vector3(px, py, pz);
+    ptMesh.position.copy(o);
+    buildTranslatedCone(upperCone, o, C.green, false, 1.3);
+    buildTranslatedCone(lowerCone, o, C.red, true, 1.3);
+    s.render();
+  }
+
+  const ctr = document.getElementById('ctrls3');
+  addSlider(ctr, 'm₁', -0.5, 1.0, 0.02, px, v => { px = v; update(); });
+  addSlider(ctr, 'b', 0.0, 1.5, 0.02, py, v => { py = v; update(); });
+  addSlider(ctr, 'm₂', -0.5, 1.0, 0.02, pz, v => { pz = v; update(); });
+  update();
+  return s;
+}
+
+
+// ══════════════════════════════════════════════════════════════
+//  SECTION 4: Minimal & Extremal Points
+// ══════════════════════════════════════════════════════════════
+function initS4() {
+  const s = new Scene3D('c4', {radius:4.5, theta:0.5, phi:0.95, tx:0.2, ty:0.4, tz:0.2});
+  addAxes(s.scene, 1.5);
+  addSACone(s.scene, 0.05, 1.8);
+
+  const verts = B_VERTS.map(v => v.clone());
+  const tetra = makeTetra(verts, C.setB, C.setBWire, 0.15);
+  s.scene.add(tetra);
+
+  // Find minimal vertices: those that are not dominated by any other vertex
+  // v1 dominates v2 if v1 - v2 is an SA-measure: eval(v1-v2, f) >= 0 for all f in [0,1]^2
+  function dominates(v1, v2) {
+    // Check at vertices of [0,1]^2
+    for (const f of [[0,0],[1,0],[0,1],[1,1]]) {
+      if (evalFunc(v1, f[0], f[1]) - evalFunc(v2, f[0], f[1]) < -1e-9) return false;
+    }
+    return true;
+  }
+  function isMinimal(i) {
+    for (let j = 0; j < verts.length; j++) {
+      if (i !== j && dominates(verts[i], verts[j]) && !dominates(verts[j], verts[i])) return false;
+    }
+    return true;
+  }
+  // Highlight minimal vertices
+  verts.forEach((v, i) => {
+    if (isMinimal(i)) {
+      s.scene.add(makePoint(v, C.highlight, 0.06));
+    }
+  });
+
+  // Highlight the lower face: find the face with the lowest centroid in the SA order
+  // For viz, highlight the face whose vertices are all minimal
+  const faces = [[0,1,2],[0,1,3],[0,2,3],[1,2,3]];
+  faces.forEach(([a,b,c]) => {
+    if (isMinimal(a) && isMinimal(b) && isMinimal(c)) {
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.Float32BufferAttribute([
+        verts[a].x,verts[a].y,verts[a].z, verts[b].x,verts[b].y,verts[b].z, verts[c].x,verts[c].y,verts[c].z
+      ], 3));
+      s.scene.add(new THREE.Mesh(g, new THREE.MeshBasicMaterial({color:C.highlight, transparent:true, opacity:0.25, side:THREE.DoubleSide, depthWrite:false})));
+    }
+  });
+
+  s.render();
+
+  const ctr = document.getElementById('ctrls4');
+  const note = document.createElement('div');
+  note.className = 'ctrl';
+  note.innerHTML = '<label style="color:var(--highlight)">● Minimal vertices highlighted in yellow</label>';
+  ctr.appendChild(note);
+  return s;
+}
+
+
+// ══════════════════════════════════════════════════════════════
+//  SECTION 5: Expectation as Probing
+// ══════════════════════════════════════════════════════════════
+function initS5() {
+  const s = new Scene3D('c5', {radius:4.5, theta:0.5, phi:0.95, tx:0.2, ty:0.4, tz:0.2});
+  addAxes(s.scene, 1.5);
+  addSACone(s.scene, 0.04, 1.8);
+
+  const verts = B_VERTS.map(v => v.clone());
+  s.scene.add(makeTetra(verts, C.setB, C.setBWire, 0.12));
+
+  let f1 = 0.5, f2 = 0.5;
+  let arrowObj = null, highlightPt = null, projLines = [];
+
+  function update() {
+    if (arrowObj) s.scene.remove(arrowObj);
+    if (highlightPt) s.scene.remove(highlightPt);
+    projLines.forEach(l => s.scene.remove(l));
+    projLines = [];
+
+    // Direction vector in Three.js: (f1, 1, f2), because we evaluate m1*f1 + b*1 + m2*f2
+    const dir = new THREE.Vector3(f1, 1, f2);
+    const dirNorm = dir.clone().normalize();
+
+    // Arrow along direction
+    arrowObj = makeArrow(new THREE.Vector3(-0.2*f1, -0.2, -0.2*f2), dirNorm.clone().multiplyScalar(2.2), C.probe, 0.12);
+    s.scene.add(arrowObj);
+
+    // Evaluate at each vertex
+    let minVal = Infinity, minIdx = 0;
+    const vals = verts.map((v, i) => {
+      const val = evalFunc(v, f1, f2);
+      if (val < minVal) { minVal = val; minIdx = i; }
+      return val;
+    });
+
+    // Highlight minimizer
+    highlightPt = makePoint(verts[minIdx], C.highlight, 0.07);
+    s.scene.add(highlightPt);
+
+    // Projection lines from each vertex to the direction axis
+    verts.forEach((v, i) => {
+      const proj = dirNorm.clone().multiplyScalar(vals[i] / dir.length());
+      const g = new THREE.BufferGeometry().setFromPoints([v, proj]);
+      const col = i === minIdx ? C.highlight : 0x3a3b45;
+      const line = new THREE.Line(g, new THREE.LineBasicMaterial({color: col, transparent:true, opacity: i===minIdx?0.8:0.3}));
+      s.scene.add(line);
+      projLines.push(line);
+    });
+
+    document.getElementById('ro5').innerHTML =
+      `𝔼<sub>B</sub>(${f1.toFixed(2)}, ${f2.toFixed(2)}) = min{${vals.map(v=>v.toFixed(3)).join(', ')}} = <strong style="color:var(--accent)">${minVal.toFixed(3)}</strong>  (vertex ${minIdx + 1})`;
+    s.render();
+  }
+
+  const ctr = document.getElementById('ctrls5');
+  addSlider(ctr, 'f₁', 0, 1, 0.01, f1, v => { f1 = v; update(); });
+  addSlider(ctr, 'f₂', 0, 1, 0.01, f2, v => { f2 = v; update(); });
+  update();
+  return s;
+}
+
+
+// ══════════════════════════════════════════════════════════════
+//  SECTION 6: Normalization
+// ══════════════════════════════════════════════════════════════
+function initS6() {
+  const s = new Scene3D('c6', {radius:5, theta:0.5, phi:0.85, tx:0.2, ty:0.5, tz:0.2});
+  addAxes(s.scene, 1.8);
+  addSACone(s.scene, 0.04, 2.0);
+
+  // b=0 plane
+  const planeG = new THREE.PlaneGeometry(4, 4);
+  const planeB0 = new THREE.Mesh(planeG, new THREE.MeshBasicMaterial({color:C.green, transparent:true, opacity:0.06, side:THREE.DoubleSide, depthWrite:false}));
+  planeB0.rotation.x = -Math.PI / 2;
+  s.scene.add(planeB0);
+
+  // m1+m2+b=1 plane: normal is (1,1,1)/sqrt3, distance 1/sqrt3
+  const planeN = new THREE.Mesh(planeG.clone(), new THREE.MeshBasicMaterial({color:C.accent, transparent:true, opacity:0.06, side:THREE.DoubleSide, depthWrite:false}));
+  // This plane passes through (1,0,0), (0,1,0), (0,0,1) in our coords (since m1+b+m2=1)
+  // In Three.js: x + y + z = 1. Normal = (1,1,1). Point on plane: (1/3,1/3,1/3)
+  const n111 = new THREE.Vector3(1,1,1).normalize();
+  planeN.lookAt(n111);
+  planeN.position.copy(new THREE.Vector3(1/3, 1/3, 1/3));
+  s.scene.add(planeN);
+
+  // The original set B (unnormalized, shifted up)
+  const origVerts = [
+    new THREE.Vector3(0.5, 0.6, 0.15),
+    new THREE.Vector3(0.15, 0.6, 0.5),
+    new THREE.Vector3(0.25, 1.05, 0.3),
+    new THREE.Vector3(-0.05, 0.85, 0.1),
+  ];
+  let currentVerts = origVerts.map(v => v.clone());
+  let tetraGroup = makeTetra(currentVerts, C.setB, C.setBWire, 0.15);
+  s.scene.add(tetraGroup);
+
+  let animating = false, animPhase = 0, animT = 0;
+
+  function getEB(verts, f1, f2) {
+    return Math.min(...verts.map(v => evalFunc(v, f1, f2)));
+  }
+
+  function updateReadout() {
+    const eb0 = getEB(currentVerts, 0, 0);
+    const eb1 = getEB(currentVerts, 1, 1);
+    document.getElementById('ro6').innerHTML =
+      `𝔼<sub>B</sub>(0) = <strong style="color:${Math.abs(eb0)<0.01?'var(--green)':'var(--fg)'}">${eb0.toFixed(3)}</strong> &nbsp;|&nbsp; 𝔼<sub>B</sub>(1) = <strong style="color:${Math.abs(eb1-1)<0.01?'var(--green)':'var(--fg)'}">${eb1.toFixed(3)}</strong>`;
+  }
+
+  function rebuildTetra() {
+    s.scene.remove(tetraGroup);
+    tetraGroup = makeTetra(currentVerts, C.setB, C.setBWire, 0.15);
+    s.scene.add(tetraGroup);
+    updateReadout();
+    s.render();
+  }
+
+  function animate() {
+    if (!animating) return;
+    animT += 0.02;
+    if (animT > 1) animT = 1;
+    const t = animT * animT * (3 - 2 * animT); // smoothstep
+
+    if (animPhase === 0) {
+      // Shift: move down by EB(0)
+      const eb0 = getEB(origVerts, 0, 0);
+      currentVerts = origVerts.map(v => new THREE.Vector3(v.x, v.y - eb0 * t, v.z));
+      rebuildTetra();
+      if (animT >= 1) { animPhase = 1; animT = 0; }
+    } else if (animPhase === 1) {
+      // Wait a beat
+      animT += 0.05;
+      if (animT >= 1) { animPhase = 2; animT = 0; }
+    } else if (animPhase === 2) {
+      // Rescale by 1/EB(1)
+      const shiftedVerts = origVerts.map(v => new THREE.Vector3(v.x, v.y - getEB(origVerts, 0, 0), v.z));
+      const eb1 = getEB(shiftedVerts, 1, 1);
+      const scale = 1 + (1/eb1 - 1) * t;
+      currentVerts = shiftedVerts.map(v => v.clone().multiplyScalar(scale));
+      rebuildTetra();
+      if (animT >= 1) { animating = false; }
+    }
+    requestAnimationFrame(animate);
+  }
+
+  const ctr = document.getElementById('ctrls6');
+  addButton(ctr, '▶ Normalize', () => {
+    animPhase = 0; animT = 0; animating = true;
+    animate();
+  });
+  addButton(ctr, '↺ Reset', () => {
+    animating = false;
+    currentVerts = origVerts.map(v => v.clone());
+    rebuildTetra();
+  });
+  updateReadout();
+  s.render();
+  return s;
+}
+
+
+// ══════════════════════════════════════════════════════════════
+//  SECTION 7: Mixtures
+// ══════════════════════════════════════════════════════════════
+function initS7() {
+  const s = new Scene3D('c7', {radius:5, theta:0.6, phi:0.9, tx:0.3, ty:0.35, tz:0.3});
+  addAxes(s.scene, 1.5);
+  addSACone(s.scene, 0.03, 1.8);
+
+  // Two small triangles (3 vertices each)
+  const A1 = [
+    new THREE.Vector3(0.1, 0.2, 0.1),
+    new THREE.Vector3(0.5, 0.15, 0.1),
+    new THREE.Vector3(0.2, 0.5, 0.15),
+  ];
+  const A2 = [
+    new THREE.Vector3(0.1, 0.2, 0.4),
+    new THREE.Vector3(0.15, 0.15, 0.6),
+    new THREE.Vector3(0.05, 0.55, 0.45),
+  ];
+
+  function makeTriMesh(verts, color, wireColor, op = 0.2) {
+    const g = new THREE.Group();
+    const fg = new THREE.BufferGeometry();
+    fg.setAttribute('position', new THREE.Float32BufferAttribute([
+      ...verts[0].toArray(), ...verts[1].toArray(), ...verts[2].toArray()
+    ], 3));
+    g.add(new THREE.Mesh(fg, new THREE.MeshBasicMaterial({color, transparent:true, opacity:op, side:THREE.DoubleSide, depthWrite:false})));
+    for (let i = 0; i < 3; i++) {
+      const j = (i + 1) % 3;
+      const lg = new THREE.BufferGeometry().setFromPoints([verts[i], verts[j]]);
+      g.add(new THREE.Line(lg, new THREE.LineBasicMaterial({color: wireColor})));
+    }
+    verts.forEach(v => g.add(makePoint(v, wireColor, 0.025)));
+    return g;
+  }
+
+  let alpha = 0.5;
+  let a1Mesh = makeTriMesh(A1, C.setA1, C.setA1, 0.2);
+  let a2Mesh = makeTriMesh(A2, C.setA2, C.setA2, 0.2);
+  let mixMesh = new THREE.Group();
+  s.scene.add(a1Mesh);
+  s.scene.add(a2Mesh);
+  s.scene.add(mixMesh);
+
+  function updateMix() {
+    s.scene.remove(mixMesh);
+    mixMesh = new THREE.Group();
+
+    // Minkowski sum: αA1 + (1-α)A2
+    // Vertices of the sum are all pairwise sums α*a1i + (1-α)*a2j
+    const sumVerts = [];
+    for (const a1 of A1) {
+      for (const a2 of A2) {
+        sumVerts.push(a1.clone().multiplyScalar(alpha).add(a2.clone().multiplyScalar(1 - alpha)));
+      }
+    }
+
+    // Convex hull of 9 points in 3D — draw all pairwise edges and triangles
+    // For a decent approximation, connect all pairs and draw triangulated faces
+    // Simple approach: draw the point cloud + edges of the convex hull
+    sumVerts.forEach(v => mixMesh.add(makePoint(v, C.mix, 0.02)));
+
+    // Draw edges between "nearby" vertices (convex hull approximation)
+    for (let i = 0; i < sumVerts.length; i++) {
+      for (let j = i + 1; j < sumVerts.length; j++) {
+        // Only draw edges that are on the convex hull boundary
+        // Simple heuristic: draw all edges (for 9 points it looks OK)
+        const d = sumVerts[i].distanceTo(sumVerts[j]);
+        if (d < 0.8) {
+          const g = new THREE.BufferGeometry().setFromPoints([sumVerts[i], sumVerts[j]]);
+          mixMesh.add(new THREE.Line(g, new THREE.LineBasicMaterial({color: C.mix, transparent:true, opacity:0.3})));
+        }
+      }
+    }
+
+    // Draw faces: for each triple from A1×A2 grid, draw a face
+    // The Minkowski sum of two triangles is a hexagon (in 2D). In 3D, it's a polyhedron.
+    // For visualization, draw the faces of the A1-indexed and A2-indexed sub-triangles
+    for (let i = 0; i < 3; i++) {
+      // Fix a vertex from A1, get the triangle from A2
+      const base = A1[i].clone().multiplyScalar(alpha);
+      const tri = A2.map(a => base.clone().add(a.clone().multiplyScalar(1 - alpha)));
+      const fg = new THREE.BufferGeometry();
+      fg.setAttribute('position', new THREE.Float32BufferAttribute([...tri[0].toArray(), ...tri[1].toArray(), ...tri[2].toArray()], 3));
+      mixMesh.add(new THREE.Mesh(fg, new THREE.MeshBasicMaterial({color: C.mix, transparent:true, opacity:0.1, side:THREE.DoubleSide, depthWrite:false})));
+    }
+    for (let j = 0; j < 3; j++) {
+      const base = A2[j].clone().multiplyScalar(1 - alpha);
+      const tri = A1.map(a => base.clone().add(a.clone().multiplyScalar(alpha)));
+      const fg = new THREE.BufferGeometry();
+      fg.setAttribute('position', new THREE.Float32BufferAttribute([...tri[0].toArray(), ...tri[1].toArray(), ...tri[2].toArray()], 3));
+      mixMesh.add(new THREE.Mesh(fg, new THREE.MeshBasicMaterial({color: C.mix, transparent:true, opacity:0.1, side:THREE.DoubleSide, depthWrite:false})));
+    }
+
+    s.scene.add(mixMesh);
+
+    // Update opacity of originals
+    a1Mesh.children.forEach(c => { if(c.material) c.material.opacity = 0.1 + 0.2 * alpha; });
+    a2Mesh.children.forEach(c => { if(c.material) c.material.opacity = 0.1 + 0.2 * (1-alpha); });
+
+    s.render();
+  }
+
+  const ctr = document.getElementById('ctrls7');
+  addSlider(ctr, 'α', 0, 1, 0.01, alpha, v => { alpha = v; updateMix(); });
+  updateMix();
+  return s;
+}
+
+
+// ══════════════════════════════════════════════════════════════
+//  SECTION 8: Raw Update
+// ══════════════════════════════════════════════════════════════
+function initS8() {
+  const s = new Scene3D('c8', {radius:5, theta:0.6, phi:0.9, tx:0.2, ty:0.4, tz:0.2});
+  addAxes(s.scene, 1.5);
+  addSACone(s.scene, 0.04, 1.8);
+
+  const origVerts = B_VERTS.map(v => v.clone());
+  let origTetra = makeTetra(origVerts, 0x3a3b45, 0x555555, 0.08);
+  s.scene.add(origTetra);
+
+  let L1 = 1.0, L2 = 1.0, g1 = 0.5, g2 = 0.5;
+  let updatedTetra = new THREE.Group();
+  s.scene.add(updatedTetra);
+
+  function update() {
+    s.scene.remove(updatedTetra);
+
+    // Raw update: (m1, b, m2) -> (m1*L1, b + m1*(1-L1)*g1 + m2*(1-L2)*g2, m2*L2)
+    // In our coords: v = (x=m1, y=b, z=m2)
+    // Updated: x' = x * L1, z' = z * L2, y' = y + x*(1-L1)*g1 + z*(1-L2)*g2
+    const newVerts = origVerts.map(v => {
+      const x2 = v.x * L1;
+      const z2 = v.z * L2;
+      const y2 = v.y + v.x * (1 - L1) * g1 + v.z * (1 - L2) * g2;
+      return new THREE.Vector3(x2, y2, z2);
+    });
+    updatedTetra = makeTetra(newVerts, C.setB, C.setBWire, 0.2);
+    s.scene.add(updatedTetra);
+
+    // Draw transformation lines from old to new vertices
+    origVerts.forEach((v, i) => {
+      const g = new THREE.BufferGeometry().setFromPoints([v, newVerts[i]]);
+      updatedTetra.add(new THREE.Line(g, new THREE.LineBasicMaterial({color: C.highlight, transparent:true, opacity:0.3})));
+    });
+
+    document.getElementById('ro8').innerHTML =
+      `Update: (m,b) → (m·L, b + m·(1−L)·g) with L=(${L1.toFixed(2)}, ${L2.toFixed(2)}), g=(${g1.toFixed(2)}, ${g2.toFixed(2)})`;
+    s.render();
+  }
+
+  const ctr = document.getElementById('ctrls8');
+  addSlider(ctr, 'L₁', 0, 1, 0.01, L1, v => { L1 = v; update(); });
+  addSlider(ctr, 'L₂', 0, 1, 0.01, L2, v => { L2 = v; update(); });
+  addSlider(ctr, 'g₁', 0, 1, 0.01, g1, v => { g1 = v; update(); });
+  addSlider(ctr, 'g₂', 0, 1, 0.01, g2, v => { g2 = v; update(); });
+  update();
+  return s;
+}
+
+
+// ══════════════════════════════════════════════════════════════
+//  INITIALIZATION & RENDER LOOP
+// ══════════════════════════════════════════════════════════════
+
+const scenes = {};
+const sectionIds = ['s1','s2','s3','s4','s5','s6','s7','s8'];
+
+// Build dot navigation
+const nav = document.getElementById('dotnav');
+sectionIds.forEach(id => {
+  const a = document.createElement('a');
+  a.href = '#' + id;
+  a.dataset.section = id;
+  nav.appendChild(a);
+});
+
+// Lazy init with IntersectionObserver
+const inited = new Set();
+const visible = new Set();
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    const id = entry.target.id;
+    if (entry.isIntersecting) {
+      visible.add(id);
+      if (!inited.has(id)) {
+        inited.add(id);
+        const initFn = {s1:initS1, s2:initS2, s3:initS3, s4:initS4, s5:initS5, s6:initS6, s7:initS7, s8:initS8}[id];
+        if (initFn) scenes[id] = initFn();
+      }
+      // Update nav dots
+      nav.querySelectorAll('a').forEach(a => a.classList.toggle('active', a.dataset.section === id));
+    } else {
+      visible.delete(id);
+    }
+  });
+}, { threshold: 0.3 });
+
+sectionIds.forEach(id => {
+  const el = document.getElementById(id);
+  if (el) observer.observe(el);
+});
+
+// Continuous render for rotation (only visible scenes)
+function renderLoop() {
+  visible.forEach(id => {
+    if (scenes[id]) scenes[id].render();
+  });
+  requestAnimationFrame(renderLoop);
+}
+renderLoop();
+</script>
+</body>
+</html>
