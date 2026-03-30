@@ -62,13 +62,13 @@ nav a:hover,nav a.active{background:var(--accent);transform:scale(1.4)}
 <div class="row">
 <div class="col-text">
 <p>$\mathcal{M}^\pm(X)$ &mdash; all finite signed measures over $X$.</p>
-<p>Borel $\sigma$-Algebra, for us: power set.</p>
+<p>Borel $\sigma$-Algebra \Sigma.</p>
 <div class="math-block">$$m: \Sigma(X) \to \mathbb{R}$$</div>
 <p>$\sigma$-additivity: $\;m\!\left(\bigcup_i A_i\right) = \sum_i m(A_i),\quad A_i \cap A_j = \emptyset$</p>
 <p>$m(\emptyset) = 0, \quad |m(A)| < \infty \;\;\forall A \in \Sigma(X)$</p>
 <p>$\longrightarrow$ <strong>Vector space.</strong></p>
 <p class="own-text">For us, $\sigma$-additivity implies that $m$ can be uniquely specified by the value it takes on the individual $x \in X$.</p>
-<div class="math-block">$$\mathcal{M}^\pm(X) \cong \mathbb{R}^4, \quad \mathcal{M}^\pm(X) \oplus \mathbb{R} \cong \mathbb{R}^5$$</div>
+<div class="math-block">$$\mathcal{M}^\pm(X) \cong \mathbb{R}^N, \quad \mathcal{M}^\pm(X) \oplus \mathbb{R} \cong \mathbb{R}^{N+1}$$</div>
 <p class="own-text">$m \in \mathcal{M}^\pm(X)$ can be interpreted as a function $m: C(X,[0,1]) \to \mathbb{R},\;\; m(f) = \int\! f\, dm$.</p>
 <p>For us:</p>
 <div class="math-block">$$(m,b)(f) \;=\; \sum_i m_{(a_i, r_i)}\, f_{a_i, r_i} \;+\; b$$</div>
@@ -234,7 +234,7 @@ $$\iff (m_1 - m_2,\; b_1 - b_2) \in \mathcal{M}^{SA}(X)$$</div>
 <p><strong>Gluing $f$ to $g$ via $L$:</strong></p>
 <p class="own-text">We often imagine that $L \approx 1$ in some region and $L \approx 0$ in the complement, then $f \star^L g$ is obtained by taking $f$ in the subspace where $L \approx 1$ and $g$ where $L \approx 0$ and adding them up.</p>
 <p>$H$ is updated by mapping each $m \in H$ to:</p>
-<div class="math-block">$$(m, b) \;\mapsto\; \frac{1}{P_H^s(L)}\left(m \cdot L,\;\; b + m(0 \star^L g)\right)$$</div>
+<div class="math-block">$$(m, b) \;\mapsto\; \frac{1}{P_H^g(L)}\left(m \cdot L,\;\; b + m(0 \star^L g)\right)$$</div>
 <p class="own-text">What does $m \cdot L$ do geometrically? $\;0 \leq L \leq 1$, so $m$ is moved closer to the $m$-boundaries of $\mathcal{M}^{SA}$, the stronger for $m_i$, the stronger "microhistory" $i$ is disconfirmed by $L$.</p>
 <p class="own-text">Or: $m \cdot L$ corresponds to element-wise multiplication of $m$ with $L$, which is like multiplication with the matrix $M_L = \text{diag}(L_i, \ldots, L_n)$. Unit sphere gets mapped to ellipsoid with semi-axes $L_i$.</p>
 <p>As a matrix:</p>
