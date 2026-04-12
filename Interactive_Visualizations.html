@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Geometry of Infra-Bayesian Measures</title>
+<title>Geometry of Infrabayesian Measures</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.4/katex.min.css">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.4/katex.min.js"></script>
@@ -50,7 +50,7 @@ nav a:hover,nav a.active{background:var(--accent);transform:scale(1.4)}
 </head>
 <body>
 <header>
-<h1>The Geometry of Infra-Bayesian Measures</h1>
+<h1>The Geometry of Infrabayesian Measures</h1>
 <p class="subtitle">Interactive exploration — for $X = \{x_1, x_2\}$, visualized in $\mathbb{R}^3$</p>
 </header>
 
@@ -62,18 +62,22 @@ nav a:hover,nav a.active{background:var(--accent);transform:scale(1.4)}
 <div class="row">
 <div class="col-text">
 <p>$\mathcal{M}^\pm(X)$ &mdash; all finite signed measures over $X$.</p>
-<p>Borel $\sigma$-Algebra, for us: power set.</p>
+<p>Intuition: $X$ is supposed to be the set of "things to have beliefs about", so for us this will most often be histories navigated by the agent.</p>
+<p>Borel $\sigma$-Algebra: For a discrete set of finite histories, we can generally use the power set.</p>
 <div class="math-block">$$m: \Sigma(X) \to \mathbb{R}$$</div>
 <p>$\sigma$-additivity: $\;m\!\left(\bigcup_i A_i\right) = \sum_i m(A_i),\quad A_i \cap A_j = \emptyset$</p>
 <p>$m(\emptyset) = 0, \quad |m(A)| < \infty \;\;\forall A \in \Sigma(X)$</p>
-<p>$\longrightarrow$ <strong>Vector space.</strong></p>
 <p class="own-text">For us, $\sigma$-additivity implies that $m$ can be uniquely specified by the value it takes on the individual $x \in X$.</p>
-<div class="math-block">$$\mathcal{M}^\pm(X) \cong \mathbb{R}^4, \quad \mathcal{M}^\pm(X) \oplus \mathbb{R} \cong \mathbb{R}^5$$</div>
+<p>$\longrightarrow$ <strong>(Co-)vector space.</strong></p>
+
 <p class="own-text">$m \in \mathcal{M}^\pm(X)$ can be interpreted as a function $m: C(X,[0,1]) \to \mathbb{R},\;\; m(f) = \int\! f\, dm$.</p>
-<p>For us:</p>
-<div class="math-block">$$(m,b)(f) \;=\; \sum_i m_{(a_i, r_i)}\, f_{a_i, r_i} \;+\; b$$</div>
+<p>To form an affine measure, we add a constant $b$. They are applied to a function $f \in C(X, [0,1])$ via the prescription $(m,\;b)(f) = m(f) + b$. Intuition: The Infrabayesianism decision rule will require keeping track of information about counterfactual histories, which is kept track of using $b$. </p>
+<p>In the finite case, this can be geometrically interpreted as the application of a covector $(b,\mathbf{m}^T)$ to a vector $(1,\mathbf{f})^T$:</p>
+<div class="math-block">$$(m,b)(f) \;=\; (b,\mathbf{m}^T)(1,\mathbf{f})^T \;=\; b \;+\;\sum_i m_i\, f_i $$</div>
+and thus:
+<div class="math-block">$$\mathcal{M}^\pm(X) \cong \mathbb{R}^{|X|}, \quad \mathcal{M}^\pm(X) \oplus \mathbb{R} \cong \mathbb{R}^{|X|+1}$$</div>
 <p class="own-text">$\mathcal{M}^\pm(X)$ is equipped with <strong>weak topology</strong>: $m_n \to m \iff m_n(f) \to m(f)$ for all $f \in C_b(X)$ (bounded cont. func.).</p>
-<div class="placeholder">Fill in: connecting text for the visualization</div>
+<div class="placeholder">On the right, we visualize an sa-measure as a point in the space of points $(m_1,m_2,b)$ as well as a function $f$, interpreted as a vector $(1,f_1,f_2)^T$. </div>
 </div>
 <div class="col-viz">
 <canvas class="viz" id="c1" width="560" height="400"></canvas>
@@ -85,19 +89,21 @@ nav a:hover,nav a.active{background:var(--accent);transform:scale(1.4)}
 
 <!-- ═══════ SECTION 2 ═══════ -->
 <section id="s2">
-<h2><span class="num">02</span>The SA-Measure Cone</h2>
+<h2><span class="num">02</span>The Cone of SA-Measures $\mathcal{M}^\mathrm{SA}$</h2>
 <div class="row">
 <div class="col-text">
-<p><strong>sa-measure:</strong> $(m^+ + m^-,\; b) \in \mathcal{M}^\pm(X) \oplus \mathbb{R}\;$ such that $\;m^-(1) + b \geq 0$.</p>
-<p>From Jordan decomposition: $m = m^+ + m^-$, where $m^+ \geq 0,\; m^- \leq 0$.</p>
-<div class="math-block">$$m(f) + b = \begin{pmatrix}m \\ b\end{pmatrix}\!\cdot\!\begin{pmatrix}1 \\ 1\end{pmatrix} \geq 0$$</div>
-<p class="own-text">Why sa-measures like this: $m^-(1) + b \geq 0$? &nbsp;(And not $m(1) + b \geq 0$?)</p>
-<p class="own-text">Because we want $m(f) + b \geq 0\;\;\forall f \in C(X, [0,1])$.</p>
+<p>We define a class of semi-affine measures, so called SA-measures $(m,\; b) \in \mathcal{M}^\pm(X) \oplus \mathbb{R}\;$. 
+<p>Using the Jordan decomposition, $m$ can be decomposed into a positive and negative part: $m = m^+ + m^-$, where $m^+ \geq 0,\; m^- \leq 0$.</p>
+SA-measure are supposed to be generalized notions for "how to take expectation values", so we demand that they fulfill $\;m^-(1) + b \geq 0$.</p>
+<p>This condition is chosen to make sure that $m(f) + b \geq 0$ for all $f \in C(X, [0,1])$</p>
 <p>"$\Rightarrow$": $\;m(f) + b \geq 0 \;\Rightarrow\; m(1 \cdot \mathbb{1}_N) + b \geq b$, $N$ suitable from decomp. $\;\Rightarrow\; m^-(1) + b \geq 0\;\checkmark$</p>
 <p>"$\Leftarrow$": $\;0 \leq m^-(1) + b \leq m^-(1) + m^+(1) + b \leq m^-(f) + m^+(f) + b = m(f) + b$</p>
 <p>$\longrightarrow m(f) + b \geq 0.$</p>
 <p class="own-text"><strong>So sa-measures are precisely those with $(m,b)(f) \geq 0$ for all $f \in C(X, [0,1])$.</strong></p>
-<p class="own-text">$\mathcal{M}^{SA}(X)$ &mdash; also a convex cone. The "all-positive section of $\mathcal{M}^\pm(X) \oplus \mathbb{R}$".</p>
+
+<div class="math-block">$$m(f) + b = \begin{pmatrix}m \\ b\end{pmatrix}\!\cdot\!\begin{pmatrix}1 \\ 1\end{pmatrix} \geq 0$$</div>
+
+<p>$\mathcal{M}^{SA}(X)$ &mdash; is also a convex cone. The "all-positive section of $\mathcal{M}^\pm(X) \oplus \mathbb{R}$". We depict it geometrically on the right, where the $x$ and $y$-axes correspond to $m_1$ and $m_2$, and the $z$ axis to $b$.</p>
 <p class="own-text">The lower boundary is given by $b = 0$, the other boundaries are those with $\exists f$ such that $m(f) = 0$.</p>
 <div class="legend">
 <span class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> $b=0$</span>
